@@ -27,13 +27,3 @@ This module requires the following modules:
   3. Install SQlite.
   3. Install modules needed to run the program.
   4. Run main.py
-
-
-FAQ
----
-
-Q1: There is no way to save the habits?
-A1:  The app will create a "habit.json" file in the directory once habits are added.
-
-Q2: The table doesn's show properly?
-A2:  Increase the width of your window to assure proper visualization.
