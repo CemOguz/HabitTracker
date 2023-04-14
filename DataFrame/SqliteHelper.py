@@ -48,8 +48,12 @@ class SQL:
 
         self.cursor = self.conn.execute(f"SELECT week_or_daily from habits WHERE habit='{habitName}'")
         for row in self.cursor:
-            if row[0] == "daily": # checks if it's a daily habit.
-                if delta.days <= 1: # If users checks on to a daily habit just on time, below code block works.
+            if row[0] == "daily":  # checks if it's a daily habit.
+
+                if delta.days == 0:
+                    print("It has not been 24 hours since you last checked off.")
+                elif delta.days == 1:  # this part works if user checks off just to daily habit in 1 day.
+
                     # Adds +1 to streak days count.
                     self.cursor = self.conn.execute(f"SELECT week_or_daily from habits WHERE habit='{habitName}'")
                     for row in self.cursor:
@@ -59,8 +63,8 @@ class SQL:
                             for row in self.cursor:
                                 days = int(row[0])
                             days += 1
-                    #---------------------------------------------------------------------------------------
-                            # This block checks if streak is larger than the record.
+                            # ---------------------------------------------------------------------------------------
+                            # # This block checks if streak is larger than the record.
                             self.cursor = self.conn.execute(f"SELECT record FROM habits WHERE habit = '{habitName}'")
                             for row in self.cursor:
                                 if days > int(row[0]):
@@ -69,9 +73,9 @@ class SQL:
                                     self.conn.commit()
                             self.cursor.execute(f"UPDATE habits SET streak_days = '{days}' WHERE habit = '{habitName}'")
                             self.conn.commit()
-                            #-----------------------------------------------------------------------
+                            # -----------------------------------------------------------------------
 
-                            # As the last task, updates the last_updated field with current time.
+                            #  As the last task, updates the last_updated field with current time.
                             self.cursor = self.conn.execute(f"SELECT streak_days FROM habits WHERE habit='{habitName}'")
                             for row in self.cursor:
                                 if int(row[0]) % 7 == 0:
@@ -85,25 +89,26 @@ class SQL:
                             self.cursor.execute(
                                 f"UPDATE habits SET last_updated='{currentTime}' WHERE habit='{habitName}'")
                             self.conn.commit()
-                            #------------------------------------------------------------------
-                else: # If user doesn't check off a daily habit on daily, below code runs.
+                            # ------------------------------------------------------------------
+                else:  # If user doesn't check off a daily habit on daily, below code runs.
                     print("You have broken your habit your daily streak and week has been reset to 0 ")
                     self.cursor.execute(
                         f"UPDATE habits SET streak_days='{0}', streak_weeks='{0}',last_updated='{nowFormatted.now().date()}' WHERE habit='{habitName}'")
                     self.conn.commit()
-            if row[0] == "weekly": # checks if it's a weekly habit.
-                if delta.days >= 8: # if user doesn't check off weekly, below code block runs.
+            if row[0] == "weekly":  # checks if it's a weekly habit.
+
+                if delta.days >= 8:  # if user doesn't check off weekly, below code block runs.
                     print("You have broken your habit your daily streak and week has been reset to 0 ")
                     # equals streak days and weeks to zero, and updates last_updated to current time.
                     self.cursor.execute(
                         f"UPDATE habits SET streak_days='{0}', streak_weeks='{0}',last_updated='{currentTime}' WHERE habit='{habitName}'")
                     self.conn.commit()
-                if delta.days < 7: # prints out that user still has days to check off for a weekly habit.
+                if delta.days < 7:  # prints out that user still has days to check off for a weekly habit.
                     print(f"You have {delta.days} days past since last check-off")
-                    App().mainMenu() # returns to main menu
-                if delta.days == 7: # if user checks off on 7 days, below code works.
-                    days=0
-                    weeks=0
+                    App().mainMenu()  # returns to main menu
+                if delta.days == 7:  # if user checks off on 7 days, below code works.
+                    days = 0
+                    weeks = 0
 
                     # adds +1 to week.
                     self.cursor.execute(F"SELECT streak_weeks FROM habits WHERE habit='{habitName}'")
@@ -122,13 +127,12 @@ class SQL:
                     self.cursor.execute(
                         f"UPDATE habits SET streak_days = '{seven_days_added}' WHERE habit = '{habitName}'")
                     self.conn.commit()
-                    #--------------------------------------------------------
+                    # --------------------------------------------------------
 
-                    #updates last updated to current time.
+                    # updates last updated to current time.
                     self.cursor.execute(f"UPDATE habits SET last_updated='{currentTime}' WHERE habit='{habitName}'")
                     self.conn.commit()
-                    #-----------------------------------------------
-
+                    # -----------------------------------------------
 
                     # Below code works if user passes their previous record.
                     self.cursor.execute(f"SELECT record FROM habits WHERE habit='{habitName}'")
@@ -138,11 +142,11 @@ class SQL:
                         for i in self.cursor:
                             if int(i[0]) >= row[0]:
                                 self.cursor.execute(
-                                    f"UPDATE habits SET record='{int(i[0])}' WHERE habit='{habitName}'") #new record is updated.
+                                    f"UPDATE habits SET record='{int(i[0])}' WHERE habit='{habitName}'")
                                 self.conn.commit()
                         else:
-                            App().mainMenu() # let's go back to main menu
-                    #-----------------------------------------------------------
+                            App().mainMenu()  #returns to main menu
+                    # -----------------------------------------------------------
 
 
 #BELOW FUNCTIONS ARE FOR ANALYZING.
